@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -34,21 +35,20 @@ public class UserController {
     private DirService dirService;
 
     @GetMapping("/profile/{id:\\d+}")
-    public ResponseEntity userPage(@AuthenticationPrincipal UserPrincipal principal, @PathVariable("id") UserEntity user) {
+    public List<String> userPage(@AuthenticationPrincipal UserPrincipal principal, @PathVariable("id") UserEntity user) {
         if(user != null) {
-
+            List<String> toFront = new ArrayList<String>();
             try {
                 final File folder = ResourceUtils.getFile("classpath:files");
-                dirService.listFilesForFolder(folder);
-
-
+                toFront = dirService.listFilesForFolder(folder);
+                System.out.println(toFront);
             }catch(Exception e){
                 System.out.println("Такой папки нет");
             }
-
-            return ResponseEntity.ok(user);
+            return toFront;
         }
-        return ResponseEntity.badRequest().body("Данного пользователя не найдено");
+        return null;
+        //return ResponseEntity.badRequest().body("Данного пользователя не найдено");
     }
 
     @GetMapping("/getAllUsers")
