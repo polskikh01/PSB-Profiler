@@ -18,10 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
@@ -42,6 +39,17 @@ public class UserController {
                 final File folder = ResourceUtils.getFile("classpath:files");
                 toFront = dirService.listFilesForFolder(folder);
                 System.out.println(toFront);
+                //System.out.println(ResourceUtils.getFile("classpath:files").getPath());
+
+                Tesseract tesseract = new Tesseract();
+                tesseract.setDatapath(ResourceUtils.getFile("classpath:tessdata").getPath());
+                tesseract.setLanguage("rus");
+
+                String text = "";
+
+                //text = tesseract.doOCR(ResourceUtils.getFile("classpath:files/Форма 1.pdf"));
+
+                System.out.println(text.toLowerCase());
             }catch(Exception e){
                 System.out.println("Такой папки нет");
             }
