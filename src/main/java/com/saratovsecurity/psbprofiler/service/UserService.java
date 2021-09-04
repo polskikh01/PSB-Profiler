@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,7 +30,6 @@ public class UserService implements UserDetailsService {
 
     public boolean canLogin(UserEntity logged) {
         UserEntity userEntity = userRepository.findByLogin(logged.getLogin()).get();
-
         return userEntity != null && isPasswordMatches(logged.getPassword(), userEntity.getPassword());
     }
 
