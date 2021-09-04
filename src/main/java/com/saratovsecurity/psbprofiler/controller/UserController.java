@@ -8,6 +8,8 @@ import com.sun.security.auth.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
@@ -36,11 +38,14 @@ public class UserController {
 
     @GetMapping("/login")
     public String login() {
+        System.out.println("hello");
+        //BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
         return "ok";
     }
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody UserEntity userEntity) {
+        System.out.println("hello big");
         if(userService.canLogin(userEntity)) {
             AuthResponse response = userService.login(userEntity);
             return ResponseEntity.ok().body(response);
@@ -54,7 +59,6 @@ public class UserController {
 
         if(user.isPresent()){
             UserEntity userPreset = user.get();
-            userPreset.setPhoto(photoUrl);
             userRepository.save(userPreset);
         }
 

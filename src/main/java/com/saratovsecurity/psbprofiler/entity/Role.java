@@ -10,8 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum Role implements GrantedAuthority {
     ROLE_ADMIN,
-    ROLE_USER,
-    ROLE_INTERVIEWER;
+    ROLE_USER;
 
     @Override
     public String getAuthority() {

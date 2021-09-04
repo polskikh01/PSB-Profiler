@@ -16,19 +16,10 @@ public class UserEntity implements UserDetails {
         @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String name;
-    private String surname;
-    private String patronymic;
-    private String birthday;
-    private String sex;
-    private String photo;
-    private String phone;
     @Email
-    private String email;
+    private String login;
     @Size(min = 8, max = 32)
     private String password;
-    private String activationCode;
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -49,72 +40,16 @@ public class UserEntity implements UserDetails {
         return this.role.equals(Role.ROLE_ADMIN);
     }
 
-    public String getActivationCode() {
-        return activationCode;
-    }
-
-    public void setActivationCode(String activationCode) {
-        this.activationCode = activationCode;
-    }
-
-    public boolean isInterviewer(){
-        return this.role.equals(Role.ROLE_INTERVIEWER);
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getLogin() {
+        return login;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-    }
-
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(String birthday) {
-        this.birthday = birthday;
-    }
-
-    public String getSex() {
-        return sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     //@JsonDeserialize(using = CustomAuthorityDeserializer.class)
@@ -130,7 +65,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return login;
     }
 
     @Override
@@ -150,31 +85,15 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        if(this.activationCode != null){
-            return false;
-        }else{
-            return true;
-        }
+        return true;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public Long getId() {
         return id;
-    }
-
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
     }
 
     public void setRole(Role role) {

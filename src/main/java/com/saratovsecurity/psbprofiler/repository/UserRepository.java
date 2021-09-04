@@ -11,8 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
-    Optional<UserEntity> findByActivationCode(String activationCode);
     List<UserEntity> findAll();
-    Optional<UserEntity> findByEmail(String email);
-    boolean existsByEmail(String email);
+    Optional<UserEntity> findByLogin(String login);
+    boolean existsByLogin(String login);
 }

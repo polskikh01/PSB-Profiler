@@ -7,14 +7,12 @@ import lombok.Getter;
 @Getter
 public class AuthResponse {
     private Long id;
-    private String email;
-    private String photo;
+    private String login;
     private Role role;
 
     public AuthResponse(UserEntity userEntity) {
         this.id = userEntity.getId();
-        this.email = userEntity.getEmail();
+        this.login = userEntity.getLogin();
         this.role = userEntity.getRole();
-        this.photo = userEntity.getPhoto();
     }
 }

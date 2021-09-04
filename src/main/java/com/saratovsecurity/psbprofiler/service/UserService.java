@@ -23,17 +23,14 @@ public class UserService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
 
     public AuthResponse login(UserEntity logged) {
-        UserEntity userEntity = userRepository.findByEmail(logged.getEmail()).get();
+        UserEntity userEntity = userRepository.findByLogin(logged.getLogin()).get();
         return new AuthResponse(userEntity);
     }
 
     public boolean canLogin(UserEntity logged) {
-        UserEntity userEntity = userRepository.findByEmail(logged.getEmail()).get();
-        boolean activateCheck = false;
-        if(userEntity.getActivationCode() == null){
-            activateCheck = true;
-        }
-        return activateCheck && userEntity != null && isPasswordMatches(logged.getPassword(), userEntity.getPassword());
+        UserEntity userEntity = userRepository.findByLogin(logged.getLogin()).get();
+
+        return userEntity != null && isPasswordMatches(logged.getPassword(), userEntity.getPassword());
     }
 
     private boolean isPasswordMatches(String unencodedPassword, String encodedPassword) {
@@ -42,7 +39,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserEntity> currentUser = userRepository.findByEmail(username);
+        Optional<UserEntity> currentUser = userRepository.findByLogin(username);
         if(currentUser.isPresent()) {
             return currentUser.get();
         }else{
