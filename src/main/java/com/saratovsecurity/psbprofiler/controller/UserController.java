@@ -12,7 +12,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -46,23 +50,25 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody UserEntity userEntity) {
-        System.out.println("hello big");
-        if(userService.canLogin(userEntity)) {
-            AuthResponse response = userService.login(userEntity);
-            return ResponseEntity.ok().body(response);
+        System.out.println(userEntity.getLogin()+userEntity.getPassword()+userEntity.getId());
+        try {
+            if (userService.canLogin(userEntity)) {
+                AuthResponse response = userService.login(userEntity);
+                return ResponseEntity.ok().body(response);
+            }
+        }catch (NoSuchElementException e) {
+            return ResponseEntity.badRequest().body("Ошибка при авторизации");
         }
         return ResponseEntity.badRequest().body("Ошибка при авторизации");
     }
 
-    @PostMapping("/uploadFile/{id}")
-    public ResponseEntity uploadFile(@RequestBody String photoUrl, @PathVariable Long id) {
-        Optional<UserEntity> user = userRepository.findById(id);
+    @PostMapping("/uploadFile")
+    public ResponseEntity uploadFile(@RequestBody String file) {
+        //Optional<UserEntity> user = userRepository.findById(id);
+        //JSONObject obj = new JSONObject(jsonString);
+        //System.out.println();
+        System.out.println(file);
 
-        if(user.isPresent()){
-            UserEntity userPreset = user.get();
-            userRepository.save(userPreset);
-        }
-
-        return ResponseEntity.ok().body("hi");
+        return ResponseEntity.ok().body("ok");
     }
 }
