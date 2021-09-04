@@ -5,6 +5,7 @@ import com.saratovsecurity.psbprofiler.repository.*;
 import com.saratovsecurity.psbprofiler.security.AuthResponse;
 import com.saratovsecurity.psbprofiler.service.UserService;
 import com.sun.security.auth.UserPrincipal;
+import net.sourceforge.tess4j.Tesseract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
