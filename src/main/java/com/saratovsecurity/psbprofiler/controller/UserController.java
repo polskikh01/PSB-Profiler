@@ -36,7 +36,7 @@ public class UserController {
         if(user != null) {
             List<String> toFront = new ArrayList<String>();
             try {
-                final File folder = ResourceUtils.getFile("classpath:files");
+                final File folder = ResourceUtils.getFile("classpath:files/Необработанные документы");
                 toFront = dirService.listFilesForFolder(folder);
                 System.out.println(toFront);
                 //System.out.println(ResourceUtils.getFile("classpath:files").getPath());
