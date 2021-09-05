@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 @RestController
@@ -31,37 +32,84 @@ public class UserController {
     @Autowired
     private DirService dirService;
 
-    @GetMapping("/profile/{id:\\d+}")
-    public List<String> userPage(@AuthenticationPrincipal UserPrincipal principal, @PathVariable("id") UserEntity user) {
-        if(user != null) {
-            List<String> toFront = new ArrayList<String>();
-            try {
-                final File folder = ResourceUtils.getFile("classpath:files/Необработанные документы");
-                toFront = dirService.listFilesForFolder(folder);
-                System.out.println(toFront);
-                //System.out.println(ResourceUtils.getFile("classpath:files").getPath());
+    @PostMapping("/startProcessing")
+    public void startProcessing(@RequestBody String command) {
+        try {
+            //инициализируем CV
+            Tesseract tesseract = new Tesseract();
+            tesseract.setDatapath(ResourceUtils.getFile("classpath:tessdata").getPath());
+            tesseract.setLanguage("rus");
 
-                Tesseract tesseract = new Tesseract();
-                tesseract.setDatapath(ResourceUtils.getFile("classpath:tessdata").getPath());
-                tesseract.setLanguage("rus");
+            //получаем список файлов
+            final File folder = ResourceUtils.getFile("classpath:files/Необработанные документы");
+            List<String> nonProcessFiles = dirService.listFilesForFolder(folder);
 
-                String text = "";
+            for(String currentStrFile : nonProcessFiles){
+                File currentFile = ResourceUtils.getFile("classpath:files/Необработанные документы/"+currentStrFile);
+                boolean innBool = false;
+                boolean nameBool = false;
 
-                //text = tesseract.doOCR(ResourceUtils.getFile("classpath:files/Форма 1.pdf"));
+                //проверка на расширение документа
+                String ext = currentStrFile.substring(currentStrFile.lastIndexOf("."), currentStrFile.length());
 
-                System.out.println(text.toLowerCase());
-            }catch(Exception e){
-                System.out.println("Такой папки нет");
+                if(ext.equals(".pdf") || ext.equals(".png") || ext.equals(".jpg") || ext.equals(".jpeg")){
+                    String text = tesseract.doOCR(currentFile).toLowerCase();
+                    String inn = text.substring(text.indexOf("инн")+3,text.indexOf("инн")+15).replaceAll("\\D+","");
+                    if(inn.length() <= 12 && inn.length() >= 10){
+                        System.out.println(inn);
+                        innBool = true;
+                    }
+
+                    String name = text.substring(text.indexOf("пао"),text.indexOf("пао")+15);
+                    if(text.indexOf("пао") != -1){
+                        System.out.println(name);
+                        nameBool = true;
+                    }
+
+                    //ДОБАВИТЬ СВЕРКУ ПО БД
+
+                    if(innBool && nameBool){
+                        //проверка маркеров на номенклатуру
+                    }else{
+                        //перемещаем в невалид
+                        DirService.moveFile(ResourceUtils.getFile("classpath:files/Необработанные документы/"+currentStrFile).getPath(),ResourceUtils.getFile("classpath:files/Невалидные документы/").getPath()+"/"+currentStrFile);
+                    }
+                }else{
+                    //конвертация
+                    //а пока
+                    continue;
+                }
             }
-            return toFront;
+        }catch (Exception e){
+            System.out.println("Ошибка при обработке данных CV:\n");
+            e.printStackTrace();
         }
-        return null;
-        //return ResponseEntity.badRequest().body("Данного пользователя не найдено");
     }
 
-    @GetMapping("/getAllUsers")
-    public List<UserEntity> getAllUsers(@AuthenticationPrincipal UserPrincipal principal) {
-        return userRepository.findAll();
+    @GetMapping("/profile/{id:\\d+}")
+    public String userPage(@AuthenticationPrincipal UserPrincipal principal, @PathVariable("id") UserEntity user) {
+        return "ok";
+    }
+
+    @GetMapping("/nonProcessed")
+    public List<String> nonProcessed() throws FileNotFoundException {
+        final File folder1 = ResourceUtils.getFile("classpath:files/Необработанные документы");
+        List<String> toFront = dirService.listFilesForFolder(folder1);
+        return toFront;
+    }
+
+    @GetMapping("/processed")
+    public List<String> processed() throws FileNotFoundException {
+        final File folder2 = ResourceUtils.getFile("classpath:files/Обработанные документы");
+        List<String> toFront = dirService.listFilesForFolder(folder2);
+        return toFront;
+    }
+
+    @GetMapping("/nonValid")
+    public List<String> nonValid() throws FileNotFoundException {
+        final File folder3 = ResourceUtils.getFile("classpath:files/Невалидные документы");
+        List<String> toFront = dirService.listFilesForFolder(folder3);
+        return toFront;
     }
 
     @GetMapping("/login")
@@ -83,15 +131,5 @@ public class UserController {
             return ResponseEntity.badRequest().body("Ошибка при авторизации");
         }
         return ResponseEntity.badRequest().body("Ошибка при авторизации");
-    }
-
-    @PostMapping("/uploadFile")
-    public ResponseEntity uploadFile(@RequestBody String file) {
-        //Optional<UserEntity> user = userRepository.findById(id);
-        //JSONObject obj = new JSONObject(jsonString);
-        //System.out.println();
-        System.out.println(file);
-
-        return ResponseEntity.ok().body("ok");
     }
 }
