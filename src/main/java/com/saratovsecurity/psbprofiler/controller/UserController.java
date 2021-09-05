@@ -54,15 +54,17 @@ public class UserController {
 
                 if(ext.equals(".pdf") || ext.equals(".png") || ext.equals(".jpg") || ext.equals(".jpeg")){
                     String text = tesseract.doOCR(currentFile).toLowerCase();
+                    //System.out.println(text);
                     String inn = text.substring(text.indexOf("инн")+3,text.indexOf("инн")+15).replaceAll("\\D+","");
                     if(inn.length() <= 12 && inn.length() >= 10){
                         System.out.println(inn);
                         innBool = true;
                     }
 
-                    String name = text.substring(text.indexOf("пао"),text.indexOf("пао")+15);
-                    if(text.indexOf("пао") != -1){
-                        System.out.println(name);
+                    String nameTemp = text.substring(text.indexOf("пао")+3,text.indexOf("пао")+13);
+                    String name = nameTemp.substring(nameTemp.indexOf("«")+1,nameTemp.indexOf("»"));
+                    if(text.contains("пао")){
+                        System.out.println("ПАО "+name.toUpperCase());
                         nameBool = true;
                     }
 
